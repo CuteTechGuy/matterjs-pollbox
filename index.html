@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Box2d Playground</title>
+</head>
+<body>
+
+<div id="pollbox" style="width: 300px;height: 300px;">
+
+</div>
+
+<script src="matter.js"></script>
+<script>
+
+    let rnd = (min, max) => {
+        return Math.floor(min + (Math.random() * max));
+    };
+    // module aliases
+    const Engine = Matter.Engine,
+        Render = Matter.Render,
+        World = Matter.World,
+        Bodies = Matter.Bodies;
+
+    // create an engine
+    let engine = Engine.create({
+        enableSleeping: true,
+    });
+
+    // create a renderer
+    let render = Render.create({
+        element: document.getElementById('pollbox'),
+        engine: engine,
+        options: {
+            height: 300,
+            width: 200,
+            wireframes: false,
+            showSleeping: false,
+            //hasBounds:true
+        }
+    });
+
+    let randomColor = () => {
+        switch (rnd(0, 4)) {
+            case 0:
+                return "red";
+            case 1:
+                return "blue";
+            case 2:
+                return "green";
+            case 3:
+                return "yellow";
+            case 4:
+                return "magenta";
+        }
+    };
+
+    // create two boxes and a ground
+    var ball = function (size) {
+        return Bodies.rectangle(rnd(10, 190), rnd(5, 10), size, size, {
+            frictionStatic: 0,
+            density: 1,
+            render: {
+                fillStyle: randomColor(),//'#' + Math.floor(Math.random() * 16777215).toString(16)
+                text:{
+                    content:"+50",
+                    color:"white",
+                    size:20,
+                    family:"Open Sans",
+                },
+            },
+            restitution:0,
+            slop: 0
+        });
+    };
+
+    let addball = (number = 1) => {
+        for (let i = 0; i < number; i++) {
+            setTimeout(() => World.add(engine.world, ball(50)), 5 * i);
+        }
+    };
+
+    let ground = Bodies.rectangle(100, 300, 200, 10, {isStatic: true, render: {fillStyle: "white"}});
+    let wall1 = Bodies.rectangle(0, 170, 5, 300, {isStatic: true, render: {fillStyle: "white"}});
+    let wall2 = Bodies.rectangle(200, 170, 5, 300, {isStatic: true, render: {fillStyle: "white"}});
+
+    // add all of the bodies to the world
+    World.add(engine.world, [ground, wall1, wall2]);
+
+    // run the engine
+    Engine.run(engine);
+
+    // run the renderer
+    Render.run(render);
+</script>
+</body>
+</html>
